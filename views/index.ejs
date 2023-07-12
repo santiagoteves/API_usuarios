@@ -1,98 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>API usuarios</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-      crossorigin="anonymous"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled">Disabled</a>
-            </li>
-          </ul>
-          <form class="d-flex" role="search">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-success" type="submit">
-              Search
-            </button>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>API usuarios</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <% if (user) { %>
+    <div class="container mt-4">
+      <div class="card border-secondary">
+        <div class="card-header">Editar Registro</div>
+        <div class="card-body">
+          <form action="/update" method="POST">
+            <input id="id" name="id" value="<%= user.id %>" hidden>
+            <div class="mb-3">
+              <label for="user" class="form-label">Usuario</label>
+              <input type="text" class="form-control" id="user" name="user" tabindex="1" value="<%= user.user %>">
+            </div>
+            <div class="mb-3">
+              <label for="rol" class="form-label">Rol</label>
+              <select id="rol" name="rol" class="form-select" tabindex="2">
+                <option <%= user.rol=='admin' ? "selected" : '' %> value="admin">Admin</option>
+                <option <%= user.rol=='usuario' ? "selected" : '' %> value="usuario">Usuario</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" tabindex="5">Guardar</button>
+            <a href="/" class="btn btn-secondary">Cancelar</a>
           </form>
         </div>
       </div>
-    </nav>
+    </div>
+  <% } %>
 
-    <div class="container">
-      <a href="/create" class="btn tbn-outline-primary mt-4"
-        ><i class="bx bxs-user-plus bx-md"></i
-      ></a>
-      <table class="table table-bordered table-striped text-center mt-4">
-        <thead>
-          <tr class="bg-primary text-white"></tr>
+  <div class="container mt-4">
+    <div class="card border-secondary">
+      <div class="card-header">Notificaciones</div>
+      <div class="card-body">
+        <div class="notifications-container">
+          <div class="notifications">
+            <% if (notifications.length > 0) { %>
+              <% for (let i = 0; i < notifications.length; i++) { %>
+                <div class="alert alert-info" role="alert">
+                  <%= notifications[i].message %>
+                </div>
+              <% } %>
+            <% } else { %>
+              <div class="alert alert-info" role="alert">
+                No hay notificaciones.
+              </div>
+            <% } %>
+          </div>
+        </div>
+        <button id="toggleNotifications" class="btn btn-primary mt-3">Mostrar/ocultar notificaciones</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <a href="/create" class="btn tbn-outline-primary mt-4">
+      <i class="bx bxs-user-plus bx-md"></i>
+    </a>
+    <table class="table table-bordered table-striped text-center mt-4">
+      <thead>
+        <tr class="bg-primary text-white">
           <th scope="col">ID</th>
           <th scope="col">USUARIOS</th>
           <th scope="col">ROL</th>
           <th scope="col">ACCIONES</th>
-        </thead>
-        <tbody>
-          <% results.forEach((user) =>{ %>
-          <tr>
-            <td><%= user.id %></td>
-            <td><%= user.user %></td>
-            <td><%= user.rol %></td>
-            <td>
-              <a href="/edit/<%= user.id %>" class="btn btn-outline-info"
-                >editar</a
-              >
-              <a href="/delete/<%= user.id %>" class="btn btn-outline-danger"
-                >borrar</a
-              >
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        <% results.forEach((user) => { %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.user %></td>
+          <td><%= user.rol %></td>
+          <td>
+            <a href="/edit/<%= user.id %>" class="btn btn-outline-info">editar</a>
+            <a href="/delete/<%= user.id %>" class="btn btn-outline-danger">borrar</a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  <script>
+    const toggleButton = document.getElementById('toggleNotifications');
+    const notifications = document.querySelector('.notifications-container');
+
+    toggleButton.addEventListener('click', () => {
+      notifications.classList.toggle('d-none');
+    });
+  </script>
+</body>
 </html>
